@@ -49,9 +49,21 @@ class MyWebServer(socketserver.BaseRequestHandler):
             r = '%s %s %s\r\n' % (response_version, response_status, response_status_text)
             self.request.sendall((bytearray(r,'utf-8')))
             return
+        url_proto = url_proto.replace(' ', '')
+        
 
         url = PATH_PRIFIX + url_proto
+        
         url_path = urlparse(url).path
+
+        url_path = os.path.realpath(url_path)
+        cwd = os.getcwd()+'/www'
+        cwd = os.path.realpath(cwd)
+        check = os.path.commonprefix([url_path, cwd]) == cwd
+        
+        if not check:
+            self.send_404(http_version)
+            return
 
         if url_path[-1] == '/':
             url_path += 'index.html'
@@ -69,10 +81,10 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 self.request.sendall(bytearray(url_path,'utf-8'))
                 self.request.sendall(bytearray('Cache-Control: no-cache\r\n','utf-8'))
                 return
-        
+
+
         try:
             with open(url_path, 'r') as f:
-                
                 data = f.read()
                 mime = mimetypes.guess_type(url_path)[0]
                 if mime == None:
@@ -96,19 +108,21 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 
                 #self.request.sendall(data)
         except Exception as e:
-            response_version = http_version
-            response_status = '404'
-            response_status_text = 'Not Found' # this can be random
-
-            # sending all this stuff
-            d = '%s %s %s\r\n' % (response_version, response_status, response_status_text)
-            self.request.sendall((bytearray(d,'utf-8')))
+            self.send_404(http_version)
 
         # print(http_method)
         # print(url_path)
         # print(http_version)
 
-        
+    def send_404(self, http_version):
+        response_version = http_version
+        response_status = '404'
+        response_status_text = 'Not Found' # this can be random
+
+        # sending all this stuff
+        d = '%s %s %s\r\n' % (response_version, response_status, response_status_text)
+        self.request.sendall((bytearray(d,'utf-8')))
+    
     def finish(self):
         self.request.close()
     
