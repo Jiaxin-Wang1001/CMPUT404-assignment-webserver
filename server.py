@@ -38,7 +38,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
         #print ("Got a request of: %s\n" % self.data)
         data = self.data.decode('utf-8')
         data = data.split('\r\n')
-        http_method, url_proto, http_version = data[0].split()
+        http_method, url_proto0, http_version = data[0].split()
 
         if http_method != "GET":
             response_version = http_version
@@ -49,10 +49,10 @@ class MyWebServer(socketserver.BaseRequestHandler):
             r = '%s %s %s\r\n' % (response_version, response_status, response_status_text)
             self.request.sendall((bytearray(r,'utf-8')))
             return
-        url_proto = url_proto.replace(' ', '')
+        url_proto = url_proto0.replace(' ', '')
         
 
-        url_proto = PATH_PRIFIX + url_proto
+        url_proto = PATH_PRIFIX + url_proto0
         
         url_path = urlparse(url_proto).path
 
@@ -64,14 +64,15 @@ class MyWebServer(socketserver.BaseRequestHandler):
         if not check:
             self.send_404(http_version)
             return
-            
+
         url_path = urlparse(url_proto).path
+
         if url_path[-1] == '/':
             url_path += 'index.html'
         else:
             if os.path.isdir(url_path):
                 url_proto += '/'
-                url_path = 'Location: ' + url_proto + '\r\n'
+                url_path = 'Location: ' + url_proto0 + '\r\n'
                 response_version = http_version
                 response_status = '301'
                 response_status_text = 'Moved Permanently'
@@ -128,7 +129,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
         self.request.close()
     
     def recv_data(self, s):
-        s.settimeout(1)
+        s.settimeout(0.1)
         full_data=b''
         try:
             while True:
