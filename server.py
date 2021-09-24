@@ -43,7 +43,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
         if http_method != "GET":
             response_version = http_version
             response_status = '405'
-            response_status_text = 'Not Allowed'
+            response_status_text = 'Method Not Allowed'
 
             # sending all this stuff
             r = '%s %s %s\r\n' % (response_version, response_status, response_status_text)
@@ -92,7 +92,6 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
                 message = header + data
                 self.request.sendall(bytearray(message, 'utf-8'))
-                print("send filedwaaaaaaaaaaaaaaaaaa")
                 #print(message)
                 
                 #self.request.sendall(data)
@@ -105,23 +104,13 @@ class MyWebServer(socketserver.BaseRequestHandler):
             # sending all this stuff
             d = '%s %s %s\r\n' % (response_version, response_status, response_status_text)
             self.request.sendall((bytearray(d,'utf-8')))
-        
 
-        
+        # print(http_method)
+        # print(url_path)
+        # print(http_version)
 
-        print(http_method)
-        print(url_path)
-        print(http_version)
-
-        
-
-        # url = urlparse(self.data)
-
-        #self.request.sendall((bytearray(HTTPStatus.OK,'utf-8')))
-        # self.request.sendall(bytearray("dawdafawdadwdadwaff",'utf-8'))
         
     def finish(self):
-        print("closed")
         self.request.close()
     
     def recv_data(self, s):
