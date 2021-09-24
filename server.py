@@ -2,7 +2,13 @@
 from multiprocessing import connection
 import socketserver, os, socket
 from urllib.parse import urlparse
-import mimetypes
+import mimetypes, time
+
+from wsgiref.handlers import format_date_time
+from datetime import datetime
+from time import mktime
+
+
 
 # Copyright 2013 Abram Hindle, Eddie Antonio Santos
 # 
@@ -76,9 +82,15 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 response_version = http_version
                 response_status = '301'
                 response_status_text = 'Moved Permanently'
+                now = datetime.now()
+                stamp = mktime(now.timetuple())
+                date =  format_date_time(stamp)
+                date = 'Date: ' + date
+                print(date)
 
                 # sending all this stuff
                 a = '%s %s %s\r\n' % (response_version, response_status, response_status_text)
+                a = a + date + '\r\n'
                 self.request.sendall(bytearray(a,'utf-8'))
                 self.request.sendall(bytearray(url_path,'utf-8'))
                 self.request.sendall(bytearray('Cache-Control: no-cache\r\n','utf-8'))
@@ -96,13 +108,17 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 response_status_text = 'OK'
                 content_type = 'Content-type: ' + mime + '; charset=utf-8'
                 content_length = 'Content-Length: ' + str(len(data))
+                now = datetime.now()
+                stamp = mktime(now.timetuple())
+                date =  format_date_time(stamp)
+                date = 'Date: ' + date
                 connection = 'Connection: close'
 
 
                 # sending all this stuff
                 header = '%s %s %s  \r\n' % (response_version, response_status, response_status_text)
 
-                header += content_type + '\r\n' + content_length + '\r\n' + connection + '\r\n' + '\r\n'
+                header += content_type + '\r\n' + content_length + '\r\n' + connection + '\r\n' + date + '\r\n' + '\r\n'
 
                 message = header + data
                 self.request.sendall(bytearray(message, 'utf-8'))
@@ -120,9 +136,14 @@ class MyWebServer(socketserver.BaseRequestHandler):
         response_version = http_version
         response_status = '404'
         response_status_text = 'Not Found' # this can be random
+        now = datetime.now()
+        stamp = mktime(now.timetuple())
+        date =  format_date_time(stamp)
+        date = 'Date: ' + date
 
         # sending all this stuff
         d = '%s %s %s\r\n' % (response_version, response_status, response_status_text)
+        d += date + '\r\n'
         self.request.sendall((bytearray(d,'utf-8')))
     
     def finish(self):
