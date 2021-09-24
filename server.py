@@ -35,7 +35,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.recv_data(self.request)
-        print ("Got a request of: %s\n" % self.data)
+        #print ("Got a request of: %s\n" % self.data)
         data = self.data.decode('utf-8')
         data = data.split('\r\n')
         http_method, url_proto, http_version = data[0].split()
