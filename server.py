@@ -96,7 +96,6 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 
                 #self.request.sendall(data)
         except Exception as e:
-            print(e)
             response_version = http_version
             response_status = '404'
             response_status_text = 'Not Found' # this can be random
