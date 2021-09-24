@@ -41,6 +41,9 @@ class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.recv_data(self.request)
+
+        if self.data == b'':
+            return
         #print ("Got a request of: %s\n" % self.data)
         data = self.data.decode('utf-8')
         data = data.split('\r\n')
