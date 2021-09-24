@@ -89,7 +89,6 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 stamp = mktime(now.timetuple())
                 date =  format_date_time(stamp)
                 date = 'Date: ' + date
-                print(date)
 
                 # sending all this stuff
                 a = '%s %s %s\r\n' % (response_version, response_status, response_status_text)
