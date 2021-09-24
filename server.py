@@ -1,9 +1,7 @@
 #  coding: utf-8 
-from multiprocessing import connection
 import socketserver, os, socket
 from urllib.parse import urlparse
-import mimetypes, time
-
+import mimetypes
 from wsgiref.handlers import format_date_time
 from datetime import datetime
 from time import mktime
