@@ -74,15 +74,15 @@ class MyWebServer(socketserver.BaseRequestHandler):
             with open(url_path, 'r') as f:
                 
                 data = f.read()
-                #print(data)
+                mime = mimetypes.guess_type(url_path)[0]
+                if mime == None:
+                    mime = 'application/octet-stream'
                 response_version = http_version
                 response_status = '200'
                 response_status_text = 'OK'
-                content_type = 'Content-type: ' + mimetypes.guess_type(url_path)[0] + '; charset=utf-8'
+                content_type = 'Content-type: ' + mime + '; charset=utf-8'
                 content_length = 'Content-Length: ' + str(len(data))
                 connection = 'Connection: close'
-
-                # print(content_type)
 
 
                 # sending all this stuff
