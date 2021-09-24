@@ -52,19 +52,20 @@ class MyWebServer(socketserver.BaseRequestHandler):
         url_proto = url_proto.replace(' ', '')
         
 
-        url = PATH_PRIFIX + url_proto
+        url_proto = PATH_PRIFIX + url_proto
         
-        url_path = urlparse(url).path
+        url_path = urlparse(url_proto).path
 
         url_path = os.path.realpath(url_path)
         cwd = os.getcwd()+'/www'
         cwd = os.path.realpath(cwd)
         check = os.path.commonprefix([url_path, cwd]) == cwd
-        
+
         if not check:
             self.send_404(http_version)
             return
-
+            
+        url_path = urlparse(url_proto).path
         if url_path[-1] == '/':
             url_path += 'index.html'
         else:
